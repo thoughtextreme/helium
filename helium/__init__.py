@@ -579,6 +579,24 @@ class HTMLElement(GUIElement):
 		The Selenium WebElement corresponding to this element.
 		"""
 		return self._impl.web_element
+	@property
+	def target_frame(self):
+		"""
+		The target frame containing this element.
+		Coerces to False if contained in the main page.
+		"""
+		if self._is_bound():
+			return self._impl._bound_occurrence.frame_index
+	def switch_to_target_frame(self):
+		"""
+		Switch to the enclosing frame containing this element to access
+		Selenium WebElement properties in the proper frame context.
+		"""
+		if self._is_bound():
+			if self._impl._bound_occurrence.frame_index:
+				self._impl._driver.switch_to.frame(self._impl._bound_occurrence.frame_index[0])
+			else:
+				self._impl._driver.switch_to.default_content()
 	def __repr__(self):
 		if self._is_bound():
 			element_html = self.web_element.get_attribute('outerHTML')
