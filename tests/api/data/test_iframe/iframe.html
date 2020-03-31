@@ -2,9 +2,13 @@
 <html>
 <head>
     <title>test_iframe - iframe</title>
+    <script type="text/javascript" src="../js/util.js"></script>
 </head>
 <body>
-This text is inside an iframe.
+
+<div>This text is inside an iframe.</div>
+<div id="clickable-div" onclick="setResult('clicked in iframe');">Click me in iframe</div>
+<span>Click result:&nbsp;</span><span id="result"></span>
 <iframe src="nested_iframe.html"></iframe>
 </body>
 </html>

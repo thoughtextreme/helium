@@ -1,7 +1,7 @@
 import unittest
 
 from selenium.common.exceptions import StaleElementReferenceException
-from helium import find_all, S, Text, get_driver
+from helium import click, find_all, S, Text, get_driver
 from tests.api import BrowserAT
 
 class IframeTest(BrowserAT):
@@ -28,7 +28,7 @@ class IframeTest(BrowserAT):
 		for elem in found_elements:
 			self.assertEqual(elem.value, 'This text is inside an iframe.')
 			self.assertEqual(elem.web_element.text, 'This text is inside an iframe.')
-			self.assertEqual(elem.web_element.tag_name, 'body')
+			self.assertEqual(elem.web_element.tag_name, 'div')
 	#@unittest.skip("breaks other tests?? TODO FIXME")
 	def test_s_iframe_web_element_properties_in_default_content(self):
 		found_elements = find_all(S('iframe'))
@@ -84,3 +84,22 @@ class IframeTest(BrowserAT):
 					self.assertTrue(elem.web_element.text.startswith('This text is inside a'))
 		finally:
 			get_driver().switch_to.default_content()
+	#@unittest.skip("breaks other tests?? TODO FIXME")
+	def test_click_element_inside_iframe(self):
+		self.assertFalse(Text('clicked in iframe').exists())
+		found_elements = find_all(Text('Click me in iframe'))
+		self.assertEqual(len(found_elements), 1)
+		div = found_elements[0]
+		self.assertTrue(div.target_frame)
+		div.switch_to_target_frame()
+		click(div)
+		t1 = Text('clicked in iframe') # ** this doesn't seem to populate frame_index?
+		self.assertTrue(t1.exists())
+		found_elements = find_all(Text('clicked in iframe'))
+		self.assertEqual(len(found_elements), 1)
+		t2 = found_elements[0]
+		self.assertTrue(t2.exists())
+		self.assertEqual(t2.target_frame, div.target_frame)
+		t2.switch_to_target_frame()
+		self.assertEqual(t2.web_element.tag_name, 'span')
+		self.assertEqual(t2.web_element.get_attribute('id'), 'result')
